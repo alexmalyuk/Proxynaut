@@ -20,11 +20,8 @@ import java.util.UUID;
 @Slf4j
 public class TaskController {
 
-    @Value("${external.endpoint.url.task}")
-    private String externalEndpointUrlTask;
-
-    @Value("${external.endpoint.url.approve}")
-    private String externalEndpointUrlApprove;
+    @Value("${external.endpoint.url}")
+    private String externalEndpointUrl;
 
     @Value("${external.endpoint.authorization.header}")
     private String authorizationHeader;
@@ -38,13 +35,13 @@ public class TaskController {
             @PathVariable UUID taskId,
             HttpServletRequest request) {
 
-        log.info(String.format(CALL_ENDPOINT, "edo/task/" + taskId));
+        log.info(String.format(CALL_ENDPOINT, "/edo/task/" + taskId));
 
         HttpHeaders newHeaders = new HttpHeaders();
         newHeaders.setAll(headers);
         newHeaders.set("Authorization", authorizationHeader);
         HttpEntity<String> entity = new HttpEntity<>(newHeaders);
-        String urlWithParams = externalEndpointUrlTask + taskId;
+        String urlWithParams = externalEndpointUrl + "/task/" + taskId;
 
         ResponseEntity<String> response = restTemplate.exchange(
                 urlWithParams,
@@ -63,13 +60,13 @@ public class TaskController {
             @RequestBody(required = false) String requestBody,
             HttpServletRequest request) {
 
-        log.info(String.format(CALL_ENDPOINT, "edo/task/approve - " + requestBody));
+        log.info(String.format(CALL_ENDPOINT, "/task/approve - " + requestBody));
 
         HttpHeaders newHeaders = new HttpHeaders();
         newHeaders.setAll(headers);
         newHeaders.set("Authorization", authorizationHeader);
         HttpEntity<String> entity = new HttpEntity<>(requestBody, newHeaders);
-        String urlWithParams = externalEndpointUrlApprove;
+        String urlWithParams = externalEndpointUrl + "/edo/task/approve";
 
         ResponseEntity<String> response = restTemplate.exchange(
                 urlWithParams,

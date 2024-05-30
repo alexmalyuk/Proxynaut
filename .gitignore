@@ -36,4 +36,7 @@ build/
 /application.log
 
 /.idea/
-/.idea/
+
+/src/main/resources/keystore.jks
+/src/main/resources/application-dev.properties
+/src/main/resources/application-prod.properties
