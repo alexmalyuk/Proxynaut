@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -79,7 +76,6 @@ public class TaskController {
 
         approveRequestValidator.validate(requestBody);
 
-
         HttpHeaders newHeaders = new HttpHeaders();
         newHeaders.setAll(headers);
         newHeaders.set("Authorization", authorizationHeader);
@@ -92,9 +88,15 @@ public class TaskController {
                 entity,
                 String.class);
 
-        return ResponseEntity.status(response.getStatusCode())
-                .headers(response.getHeaders())
-                .body(response.getBody());
+        HttpStatus statusCode = (HttpStatus) response.getStatusCode();
+        if (statusCode == HttpStatus.OK || statusCode == HttpStatus.FOUND) {
+            return ResponseEntity.status(statusCode)
+                    .headers(response.getHeaders())
+                    .body(response.getBody());
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     @GetMapping("/thanks")

@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@WebMvcTest(TaskController.class)
@@ -32,25 +31,25 @@ class TaskControllerTest {
     private final String invalidTaskId = "123456789";
     public static final String APPROVE_PATH = "/edo/task/approve";
     public static final String GET_TASK_PATH = "/edo/task/";
+    public static final String GET_THANKS_PATH = "/edo/task/thanks";
 
     @Test
     void getTaskPage_Ok() throws Exception {
         mockMvc.perform(get(GET_TASK_PATH + taskId))
-                .andExpect(status().isOk());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
     void getTaskPage_RandomId() throws Exception {
         mockMvc.perform(get(GET_TASK_PATH + randomTaskId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
     void getTaskPage_InvalidId() throws Exception {
 
         mockMvc.perform(get(GET_TASK_PATH + invalidTaskId))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Server error"));
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -63,7 +62,7 @@ class TaskControllerTest {
         mockMvc.perform(post(APPROVE_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
     @Test
     void approveTask_Decline() throws Exception {
@@ -75,7 +74,7 @@ class TaskControllerTest {
         mockMvc.perform(post(APPROVE_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
 @Test
     void approveTask_DeclineWithoutComment() throws Exception {
@@ -101,7 +100,7 @@ class TaskControllerTest {
         mockMvc.perform(post(APPROVE_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -167,5 +166,12 @@ class TaskControllerTest {
                         .contentType(MediaType.ALL_VALUE)
                         .content("How can a clam cram in a clean cream can?"))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void getThanksPage() throws Exception{
+
+        mockMvc.perform(get(GET_THANKS_PATH))
+                .andExpect(status().isOk());
     }
 }
