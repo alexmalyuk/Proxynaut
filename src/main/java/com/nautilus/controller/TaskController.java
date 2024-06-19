@@ -96,4 +96,29 @@ public class TaskController {
                 .headers(response.getHeaders())
                 .body(response.getBody());
     }
+
+    @GetMapping("/thanks")
+    public ResponseEntity<String> getThanksPage(
+            @RequestHeader Map<String, String> headers,
+            HttpServletRequest request) {
+
+        log.info(String.format(CALL_ENDPOINT, "/edo/task/thanks"));
+
+        HttpHeaders newHeaders = new HttpHeaders();
+        newHeaders.setAll(headers);
+        newHeaders.set("Authorization", authorizationHeader);
+        HttpEntity<String> entity = new HttpEntity<>(newHeaders);
+        String urlWithParams = externalEndpointUrl + "/task/thanks";
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                urlWithParams,
+                HttpMethod.valueOf(request.getMethod()),
+                entity,
+                String.class);
+
+        return ResponseEntity.status(response.getStatusCode())
+                .headers(response.getHeaders())
+                .body(response.getBody());
+    }
+
 }
